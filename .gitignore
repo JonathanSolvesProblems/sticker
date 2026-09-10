@@ -13,3 +13,9 @@ __pycache__/
 .pytest_cache/
 .venv/
 venv/
+
+# Demo video footage. Never committed.
+broll/
+*.mp4
+*.mov
+*.wav
