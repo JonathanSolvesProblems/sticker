@@ -152,6 +152,8 @@
 window.STICKER_RUN = {
  "status": "complete",
  "live": true,
+ "published": true,
+ "seconds_on_line": 560,
  "drug": "metformin hcl 500 mg tablet",
  "quantity": 30,
  "postal_code": "10025",
@@ -162,7 +164,7 @@ window.STICKER_RUN = {
    "address": "independent pharmacy, ZIP 10025",
    "city": "",
    "phone_masked": "",
-   "state": "unreached",
+   "state": "no_price",
    "price": null,
    "quantity": null,
    "markup": null,
@@ -176,7 +178,7 @@ window.STICKER_RUN = {
    "address": "chain pharmacy, ZIP 10025",
    "city": "",
    "phone_masked": "",
-   "state": "unreached",
+   "state": "voicemail",
    "price": null,
    "quantity": null,
    "markup": null,
@@ -218,7 +220,7 @@ window.STICKER_RUN = {
    "address": "independent pharmacy, ZIP 10025",
    "city": "",
    "phone_masked": "",
-   "state": "unreached",
+   "state": "phone_tree",
    "price": null,
    "quantity": null,
    "markup": null,
@@ -232,7 +234,7 @@ window.STICKER_RUN = {
    "address": "independent pharmacy, ZIP 10025",
    "city": "",
    "phone_masked": "",
-   "state": "unreached",
+   "state": "no_price",
    "price": null,
    "quantity": null,
    "markup": null,
@@ -246,7 +248,7 @@ window.STICKER_RUN = {
    "address": "independent pharmacy, ZIP 10025",
    "city": "",
    "phone_masked": "",
-   "state": "unreached",
+   "state": "no_price",
    "price": null,
    "quantity": null,
    "markup": null,
@@ -274,7 +276,7 @@ window.STICKER_RUN = {
    "address": "independent pharmacy, ZIP 10025",
    "city": "",
    "phone_masked": "",
-   "state": "unreached",
+   "state": "voicemail",
    "price": null,
    "quantity": null,
    "markup": null,
@@ -288,7 +290,7 @@ window.STICKER_RUN = {
    "address": "independent pharmacy, ZIP 10025",
    "city": "",
    "phone_masked": "",
-   "state": "unreached",
+   "state": "no_price",
    "price": null,
    "quantity": null,
    "markup": null,
@@ -316,7 +318,7 @@ window.STICKER_RUN = {
    "address": "independent pharmacy, ZIP 10025",
    "city": "",
    "phone_masked": "",
-   "state": "unreached",
+   "state": "no_price",
    "price": null,
    "quantity": null,
    "markup": null,
@@ -330,7 +332,7 @@ window.STICKER_RUN = {
    "address": "independent pharmacy, ZIP 10025",
    "city": "",
    "phone_masked": "",
-   "state": "unreached",
+   "state": "no_price",
    "price": null,
    "quantity": null,
    "markup": null,
@@ -344,7 +346,7 @@ window.STICKER_RUN = {
    "address": "chain pharmacy, ZIP 10025",
    "city": "",
    "phone_masked": "",
-   "state": "unreached",
+   "state": "voicemail",
    "price": null,
    "quantity": null,
    "markup": null,
@@ -357,7 +359,7 @@ window.STICKER_RUN = {
  "nadac_citation": "CMS NADAC, METFORMIN HCL 500 MG TABLET (NDC 67877056101): $0.01419 per each, effective 2026-08-19.",
  "nadac_url": "https://data.medicaid.gov/dataset/dfa2ab14-06c2-457a-9e36-5cb6d80f8d93",
  "started_at": "2026-09-09T14:45:47.158652",
- "elapsed_seconds": 4921,
+ "elapsed_seconds": 560,
  "calls_placed": 14,
  "error": "",
  "run_id": "published",
@@ -367,7 +369,7 @@ window.STICKER_RUN = {
   "quoted": 0,
   "refused": 0,
   "not_stocked": 0,
-  "unreached": 14,
+  "unreached": 4,
   "total": 14
  }
 };
@@ -375,8 +377,12 @@ window.STICKER_RUN = {
 <script>
 const $ = (id) => document.getElementById(id);
 const money = (n) => n === null || n === undefined ? "" : "$" + n.toFixed(2);
+// "No answer" is only true when nobody lifted the phone. A person who picked up and gave
+// no price, a voicemail box, and a phone tree that never reached anyone are three
+// different outcomes, and calling them all "no answer" would hide what actually happened.
 const STATE_LABEL = {waiting:"queued", dialing:"dialing", on_call:"on call", done:"quoted",
-                     refused:"refused", not_stocked:"not stocked", unreached:"no answer"};
+                     refused:"refused", not_stocked:"not stocked", unreached:"no answer",
+                     no_price:"no price given", voicemail:"voicemail", phone_tree:"phone tree"};
 let timer = null;
 
 $("f").addEventListener("submit", async (e) => {
@@ -401,7 +407,13 @@ async function poll(){
   // A published page carries its run inline and has no server behind it, so it renders
   // once and never polls. Keeping both paths in one file means the page a judge opens is
   // the same page the survey drew live, not a screenshot of it.
-  if (window.STICKER_RUN) { render(window.STICKER_RUN); return; }
+  if (window.STICKER_RUN) {
+    // A published page has no server, so the controls would do nothing. Leaving a button
+    // on screen that silently fails is worse than not offering it.
+    $("f").hidden = true;
+    render(window.STICKER_RUN);
+    return;
+  }
   const s = await (await fetch("/api/state")).json();
   render(s);
   if (s.status === "complete" || s.status === "error"){ clearInterval(timer); $("go").disabled = false; }
@@ -428,10 +440,14 @@ function render(s){
     $("status").innerHTML = (s.live ? '<span class="live">LIVE CALLS</span> &middot; ' : "simulated &middot; ") +
       c.called + " of " + c.total + " dialled &middot; " + c.quoted + " priced &middot; " + s.elapsed_seconds + "s";
   } else if (s.status === "complete") {
+    // No cost figure. The per-call price is not published anywhere we can cite, and a
+    // made-up rate multiplied by a call count is a number that looks like evidence.
+    const span = s.published
+      ? Math.floor(s.elapsed_seconds/60) + "m " + (s.elapsed_seconds%60) + "s on the line"
+      : "in " + Math.floor(s.elapsed_seconds/60) + "m " + (s.elapsed_seconds%60) + "s";
     $("status").innerHTML = (s.live ? '<span class="live">LIVE</span> &middot; ' : "simulated &middot; ") +
-      c.total + " pharmacies called in " + Math.floor(s.elapsed_seconds/60) + "m " + (s.elapsed_seconds%60) +
-      "s &middot; " + c.quoted + " gave a price &middot; " + c.refused + " refused &middot; $" +
-      (s.calls_placed*0.05).toFixed(2) + " of calls";
+      c.total + " pharmacies called, " + span + " &middot; " + c.quoted + " gave a price &middot; " +
+      c.refused + " refused";
   } else if (s.status === "finding") {
     $("status").textContent = "Reading the federal pharmacy registry…";
   }
