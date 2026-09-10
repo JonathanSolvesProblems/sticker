@@ -1,0 +1,15 @@
+# Real-call artifacts. None of this may ever be committed.
+study_data/
+runs/
+*_destinations.txt
+authorized_destinations.txt
+
+# Credentials
+.env
+*.key
+
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.venv/
+venv/
