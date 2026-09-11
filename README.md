@@ -38,6 +38,10 @@ code** ([Arora et al.](https://pubmed.ncbi.nlm.nih.gov/28817779/)).
 
 Sticker runs that survey with a phone agent instead of a research team.
 
+## Testing it
+
+Sixteen steps, none of which place a call, in [TESTING.md](TESTING.md).
+
 ## What is here
 
 | Directory | What it is |
