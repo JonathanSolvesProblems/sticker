@@ -31,17 +31,17 @@
 
 :root{
   --body:#232C34; --well:#131A20; --ink:#D5DEE4; --muted:#8494A0;
-  --rule:#3B4750; --accent:#E07ACF; --x:#E07ACF; --bot:#9FB4C4; --them:#E8EEF2;
+  --rule:#3B4750; --lip:#0B1015; --accent:#E07ACF; --x:#E07ACF; --bot:#9FB4C4; --them:#E8EEF2;
   --step:1.25;
 }
 :root[data-theme="light"]{
   --body:#A8B4BE; --well:#1B2229; --ink:#141A1F; --muted:#37444E;
-  --rule:#7C8A95; --accent:#6E1A5E; --x:#E07ACF; --bot:#8FA3B3; --them:#E8EEF2;
+  --rule:#7C8A95; --lip:#0F151A; --accent:#6E1A5E; --x:#E07ACF; --bot:#8FA3B3; --them:#E8EEF2;
 }
 @media (prefers-color-scheme: light){
   :root:not([data-theme="dark"]){
     --body:#A8B4BE; --well:#1B2229; --ink:#141A1F; --muted:#37444E;
-    --rule:#7C8A95; --accent:#6E1A5E; --x:#E07ACF; --bot:#8FA3B3; --them:#E8EEF2;
+    --rule:#7C8A95; --lip:#0F151A; --accent:#6E1A5E; --x:#E07ACF; --bot:#8FA3B3; --them:#E8EEF2;
   }
 }
 
@@ -110,7 +110,7 @@ input[type=text]{
   font:500 14px Asap,sans-serif;padding:9px 11px;border:1px solid var(--rule);
   background:var(--well);color:var(--ink);border-radius:0;
 }
-input:focus-visible{outline:2px solid var(--accent);outline-offset:1px}
+input:focus-visible,button:focus-visible,a:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
 button{
   font:700 12px 'Chakra Petch',sans-serif;letter-spacing:.15em;text-transform:uppercase;
   padding:11px 20px;border:0;border-radius:0;background:var(--ink);color:var(--body);cursor:pointer;
@@ -148,7 +148,7 @@ button:disabled{opacity:.35;cursor:default}
 /* the inset well. a screen set into a body: hard edge, no blur. */
 .well{
   position:relative;height:38px;background:var(--well);
-  border:1px solid var(--rule);border-top-color:#0b1015;
+  border:1px solid var(--rule);border-top-color:var(--lip);
   overflow:hidden;
 }
 .well .mid{position:absolute;left:0;right:0;top:50%;height:1px;background:var(--rule);opacity:.55}
