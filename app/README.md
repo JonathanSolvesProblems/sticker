@@ -121,16 +121,27 @@ checks that a key authenticates without spending a call.
 
 ## What the agent says
 
-The disclosure is the first sentence and it is unconditional. CALL-E does not announce
-itself and exposes no setting for it, so it exists only in the task prose, which is why
-the test suite asserts on it:
+Its first word is only "Hello?", and then it waits. A pharmacy answers with its own name,
+a hold message or a recorded menu, and the agent stays silent until that has finished and
+the line is quiet. Only then does it say one sentence, which both discloses what it is and
+asks the question:
 
-> "Hello, this is an automated AI assistant calling on behalf of a public price
-> comparison, and this call is recorded."
+> "Hi, I'm an AI assistant doing a price check. What's your cash price for 30 metformin
+> 500 milligram tablets, no insurance?"
 
-Then one question, and the handling for what actually happens on a pharmacy line: a phone
-tree to navigate, a hold to wait through, a transfer to the pharmacist to re-introduce
-itself after. None of that is an API parameter. It is all steered from the prose.
+The disclosure comes before the question, every time, including after a transfer. CALL-E
+does not announce itself and exposes no setting for it, so the disclosure exists only in
+the task prose, which is why the test suite asserts on it.
+
+The drug is said the way a pharmacist says it. The federal price file spells the salt form
+and abbreviates the unit, and read aloud that becomes several seconds of noise before the
+question lands, so the spoken sentence drops both while the lookup keeps CMS's spelling.
+
+Everything else about a pharmacy line is steered from the same prose, because none of it is
+an API parameter: a menu to work through with the keypad, a hold to wait out, a transfer to
+re-introduce itself after, a voicemail box to hang up on without leaving a message, and an
+automated system demanding a prescription number, which it cannot satisfy and so ends the
+call rather than being routed to voicemail.
 
 ## Boundaries
 
@@ -203,7 +214,7 @@ find out" invites a fabricated answer.
 python -m pytest tests -q
 ```
 
-61 tests. No network, no credentials, no calls. The simulated CALL-E is an
+94 tests. No network, no credentials, no calls. The simulated CALL-E is an
 `httpx.MockTransport` mounted underneath the real transport, so the request building,
 idempotency header, polling loop, and error mapping under test are the same ones a live
 run uses.

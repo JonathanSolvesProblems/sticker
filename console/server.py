@@ -60,6 +60,8 @@ class Row:
     note: str = ""
     transcript: list[dict] = field(default_factory=list)
     seconds: int | None = None
+    turns: list[dict] = field(default_factory=list)
+    collisions: int = 0
 
 
 @dataclass
@@ -170,7 +172,7 @@ async def _execute(request: RunRequest) -> None:
     )
 
     try:
-        # The acquisition cost first, so the board can show what the pharmacy paid before
+        # The national average cost first, so the board shows the benchmark before
         # a single price lands. It is the yardstick, and it should be on screen first.
         try:
             row = lookup(drug.nadac_prefix())
@@ -274,6 +276,7 @@ async def _call_one(
 
         row.seconds = int((_dt.datetime.now() - began).total_seconds())
         row.transcript = [{"speaker": s, "text": t} for s, t in outcome.transcript]
+        row.turns, row.collisions = await _turns_for(transport, call_id)
 
         if not outcome.structured:
             row.state = "unreached"
@@ -296,6 +299,54 @@ async def _call_one(
             row.state = "not_stocked"
         else:
             row.state = "unreached"
+
+
+async def _turns_for(transport: CalleTransport, call_id: str) -> tuple[list[dict], int]:
+    """Marks on the two channels, from whichever source this transport actually has.
+
+    A live call carries an events stream with "Bot is speaking" and "Callee speech
+    detected" timestamps. The simulated wire has no events, but its scripted transcript
+    carries an offset per turn, and drawing those is the simulator's own data rendered
+    rather than anything invented on this page.
+    """
+    try:
+        events = (await transport.get(f"{call_id}/events")).get("data", [])
+    except Exception:
+        events = []
+    marks: list[tuple[float, str]] = []
+    zero = None
+    for e in events:
+        stamp, msg = e.get("created_at"), str(e.get("message") or "")
+        if not stamp:
+            continue
+        t = _dt.datetime.fromisoformat(stamp.replace("Z", "+00:00")).timestamp()
+        if msg.startswith("Call connected"):
+            zero = t
+        elif msg.startswith("Bot is speaking"):
+            marks.append((t, "bot"))
+        elif msg.startswith(("Callee said", "Callee speech detected")):
+            marks.append((t, "them"))
+    if not marks:
+        try:
+            raw = await transport.get(call_id)
+            attempts = (raw.get("recipients") or [{}])[0].get("attempts") or []
+            for turn in (attempts[0].get("transcript_turns") if attempts else []) or []:
+                off = turn.get("offset_seconds")
+                if off is None:
+                    continue
+                marks.append((float(off), "bot" if turn.get("speaker") == "bot" else "them"))
+            zero = 0.0
+        except Exception:
+            return [], 0
+    if not marks:
+        return [], 0
+    zero = zero if zero is not None else min(t for t, _ in marks)
+    them = [t for t, ch in marks if ch == "them"]
+    out = []
+    for t, ch in sorted(marks):
+        x = ch == "bot" and any(0 <= t - h <= 1.5 for h in them)
+        out.append({"t": round(t - zero, 2), "ch": ch, "x": x})
+    return out, len([m for m in out if m["x"]])
 
 
 def _fixture_pharmacies(count: int) -> list[Pharmacy]:
