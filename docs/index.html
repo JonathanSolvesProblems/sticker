@@ -31,17 +31,17 @@
 
 :root{
   --body:#232C34; --well:#131A20; --ink:#D5DEE4; --muted:#8494A0;
-  --rule:#3B4750; --accent:#C63FAE; --bot:#9FB4C4; --them:#E8EEF2;
+  --rule:#3B4750; --accent:#E07ACF; --x:#E07ACF; --bot:#9FB4C4; --them:#E8EEF2;
   --step:1.25;
 }
 :root[data-theme="light"]{
-  --body:#A8B4BE; --well:#1B2229; --ink:#141A1F; --muted:#4E5D68;
-  --rule:#7C8A95; --accent:#8E2379; --bot:#5B7080; --them:#E8EEF2;
+  --body:#A8B4BE; --well:#1B2229; --ink:#141A1F; --muted:#37444E;
+  --rule:#7C8A95; --accent:#6E1A5E; --x:#E07ACF; --bot:#8FA3B3; --them:#E8EEF2;
 }
 @media (prefers-color-scheme: light){
   :root:not([data-theme="dark"]){
-    --body:#A8B4BE; --well:#1B2229; --ink:#141A1F; --muted:#4E5D68;
-    --rule:#7C8A95; --accent:#8E2379; --bot:#5B7080; --them:#E8EEF2;
+    --body:#A8B4BE; --well:#1B2229; --ink:#141A1F; --muted:#37444E;
+    --rule:#7C8A95; --accent:#6E1A5E; --x:#E07ACF; --bot:#8FA3B3; --them:#E8EEF2;
   }
 }
 
@@ -158,7 +158,7 @@ button:disabled{opacity:.35;cursor:default}
 }
 .mk.bot{top:6px;height:11px;background:var(--bot);transform-origin:top}
 .mk.them{bottom:6px;height:11px;background:var(--them);transform-origin:bottom}
-.mk.x{background:var(--accent);width:4px;top:6px;height:26px;transform-origin:top}
+.mk.x{background:var(--x);width:4px;top:6px;height:26px;transform-origin:top}
 .drawn .mk{animation:rise .5s steps(6,end) forwards}
 @keyframes rise{to{transform:scaleY(1)}}
 .well .over{
@@ -260,7 +260,7 @@ button:disabled{opacity:.35;cursor:default}
   <div class="key" aria-hidden="true">
     <span><i style="background:var(--bot)"></i>Agent has the floor</span>
     <span><i style="background:var(--them)"></i>Pharmacy has the floor</span>
-    <span><i style="background:var(--accent);height:22px"></i>Agent opened over them</span>
+    <span><i style="background:var(--x);height:22px"></i>Agent opened over them</span>
   </div>
 
   <section class="read" id="read">
@@ -287,7 +287,7 @@ window.STICKER_RUN = {
  "status": "complete",
  "live": true,
  "published": true,
- "seconds_on_line": 560,
+ "seconds_on_line": 578,
  "drug": "metformin hcl 500 mg tablet",
  "quantity": 30,
  "postal_code": "10025",
@@ -1876,24 +1876,195 @@ window.STICKER_RUN = {
    ],
    "span": 58.9,
    "collisions": 6
+  },
+  {
+   "npi": "",
+   "name": "Independent 13",
+   "address": "Independent",
+   "city": "",
+   "phone_masked": "",
+   "state": "unreached",
+   "price": null,
+   "quantity": null,
+   "markup": null,
+   "note": "Nobody picked up.",
+   "transcript": [],
+   "seconds": null,
+   "turns": [],
+   "span": 0.0,
+   "collisions": 0
+  },
+  {
+   "npi": "",
+   "name": "Independent 14",
+   "address": "Independent",
+   "city": "",
+   "phone_masked": "",
+   "state": "unreached",
+   "price": null,
+   "quantity": null,
+   "markup": null,
+   "note": "Nobody picked up.",
+   "transcript": [],
+   "seconds": null,
+   "turns": [],
+   "span": 0.0,
+   "collisions": 0
+  },
+  {
+   "npi": "",
+   "name": "Independent 15",
+   "address": "Independent",
+   "city": "",
+   "phone_masked": "",
+   "state": "unreached",
+   "price": null,
+   "quantity": null,
+   "markup": null,
+   "note": "Nobody picked up.",
+   "transcript": [],
+   "seconds": null,
+   "turns": [],
+   "span": 0.0,
+   "collisions": 0
+  },
+  {
+   "npi": "",
+   "name": "Independent 16",
+   "address": "Independent",
+   "city": "",
+   "phone_masked": "",
+   "state": "unreached",
+   "price": null,
+   "quantity": null,
+   "markup": null,
+   "note": "Nobody picked up.",
+   "transcript": [],
+   "seconds": null,
+   "turns": [],
+   "span": 0.0,
+   "collisions": 0
+  },
+  {
+   "npi": "",
+   "name": "Independent 17",
+   "address": "Independent",
+   "city": "",
+   "phone_masked": "",
+   "state": "no_price",
+   "price": null,
+   "quantity": null,
+   "markup": null,
+   "note": "unknown",
+   "transcript": [],
+   "seconds": 18,
+   "turns": [
+    {
+     "t": 0.85,
+     "ch": "bot",
+     "x": false
+    },
+    {
+     "t": 1.16,
+     "ch": "them",
+     "x": false
+    },
+    {
+     "t": 1.91,
+     "ch": "them",
+     "x": false
+    },
+    {
+     "t": 2.91,
+     "ch": "them",
+     "x": false
+    },
+    {
+     "t": 3.4,
+     "ch": "them",
+     "x": false
+    },
+    {
+     "t": 4.12,
+     "ch": "them",
+     "x": false
+    },
+    {
+     "t": 4.47,
+     "ch": "them",
+     "x": false
+    },
+    {
+     "t": 4.79,
+     "ch": "them",
+     "x": false
+    },
+    {
+     "t": 5.1,
+     "ch": "them",
+     "x": false
+    },
+    {
+     "t": 5.38,
+     "ch": "bot",
+     "x": true
+    },
+    {
+     "t": 5.69,
+     "ch": "them",
+     "x": false
+    },
+    {
+     "t": 6.31,
+     "ch": "them",
+     "x": false
+    },
+    {
+     "t": 7.55,
+     "ch": "them",
+     "x": false
+    },
+    {
+     "t": 7.94,
+     "ch": "bot",
+     "x": true
+    },
+    {
+     "t": 8.28,
+     "ch": "them",
+     "x": false
+    },
+    {
+     "t": 8.63,
+     "ch": "bot",
+     "x": true
+    },
+    {
+     "t": 15.15,
+     "ch": "bot",
+     "x": false
+    }
+   ],
+   "span": 15.15,
+   "collisions": 3
   }
  ],
  "acquisition_cost": 0.43,
  "nadac_citation": "CMS NADAC, METFORMIN HCL 500 MG TABLET (NDC 67877056101): $0.01419 per each, effective 2026-08-19.",
  "nadac_url": "https://data.medicaid.gov/dataset/dfa2ab14-06c2-457a-9e36-5cb6d80f8d93",
  "started_at": "2026-09-09T14:45:47.158652",
- "elapsed_seconds": 560,
- "calls_placed": 14,
+ "elapsed_seconds": 578,
+ "calls_placed": 19,
  "error": "",
  "run_id": "published",
  "headline": {},
  "counts": {
-  "called": 14,
+  "called": 19,
   "quoted": 0,
   "refused": 0,
   "not_stocked": 0,
-  "unreached": 4,
-  "total": 14
+  "unreached": 8,
+  "total": 19
  }
 };
 </script>

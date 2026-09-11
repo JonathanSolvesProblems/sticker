@@ -84,9 +84,10 @@ sticker cost --drug "atorvastatin" --strength "20 mg"   # the national average c
 
 ## What happened on real calls
 
-Fifteen calls were placed to licensed community pharmacies in one Manhattan ZIP code on
-2026-09-09, between roughly 06:00 and 16:00 Eastern. **Not one produced a usable cash
-price.** That is a finding about the method, and it is reported here rather than buried:
+Sixteen calls were placed to licensed community pharmacies in one Manhattan ZIP code
+across 2026-09-09 and 2026-09-10, at hours from early morning to late afternoon. **Not one
+produced a usable cash price.** That is a finding about the method, and it is reported here
+rather than buried:
 
 - **Turn-taking is not something the caller controls.** The agent opens its turn while the
   person answering is still speaking. `CreateCallRequest` has six fields and rejects
