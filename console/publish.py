@@ -124,6 +124,10 @@ def build(paths: list[Path]) -> dict:
         finished = last if finished is None else max(finished, last)
 
         for call in run["calls"]:
+            # A request the platform refused before dialling is not a call. Showing it as
+            # "no answer" would blame a pharmacy for a limit on our own account.
+            if not call.get("call_id"):
+                continue
             calls += 1
             raw = call.get("raw") or {}
             recipient = (raw.get("recipients") or [{}])[0]

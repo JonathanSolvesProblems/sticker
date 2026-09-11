@@ -85,9 +85,11 @@ sticker cost --drug "atorvastatin" --strength "20 mg"   # the national average c
 ## What happened on real calls
 
 Sixteen calls were placed to licensed community pharmacies in one Manhattan ZIP code
-across 2026-09-09 and 2026-09-10, at hours from early morning to late afternoon. **Not one
-produced a usable cash price.** That is a finding about the method, and it is reported here
-rather than buried:
+across 2026-09-09 and 2026-09-10, at hours from early morning to late afternoon. Fifteen
+are drawn on the [results page](https://jonathansolvesproblems.github.io/sticker/); the
+first, a probe placed from the command line before the study instrument existed, reached a
+closed pharmacy's voicemail. **Not one produced a usable cash price.** That is a finding
+about the method, and it is reported here rather than buried:
 
 - **Turn-taking is not something the caller controls.** The agent opens its turn while the
   person answering is still speaking. `CreateCallRequest` has six fields and rejects

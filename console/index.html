@@ -31,17 +31,17 @@
 
 :root{
   --body:#232C34; --well:#131A20; --ink:#D5DEE4; --muted:#8494A0;
-  --rule:#3B4750; --accent:#C63FAE; --bot:#9FB4C4; --them:#E8EEF2;
+  --rule:#3B4750; --accent:#E07ACF; --x:#E07ACF; --bot:#9FB4C4; --them:#E8EEF2;
   --step:1.25;
 }
 :root[data-theme="light"]{
-  --body:#A8B4BE; --well:#1B2229; --ink:#141A1F; --muted:#4E5D68;
-  --rule:#7C8A95; --accent:#8E2379; --bot:#5B7080; --them:#E8EEF2;
+  --body:#A8B4BE; --well:#1B2229; --ink:#141A1F; --muted:#37444E;
+  --rule:#7C8A95; --accent:#6E1A5E; --x:#E07ACF; --bot:#8FA3B3; --them:#E8EEF2;
 }
 @media (prefers-color-scheme: light){
   :root:not([data-theme="dark"]){
-    --body:#A8B4BE; --well:#1B2229; --ink:#141A1F; --muted:#4E5D68;
-    --rule:#7C8A95; --accent:#8E2379; --bot:#5B7080; --them:#E8EEF2;
+    --body:#A8B4BE; --well:#1B2229; --ink:#141A1F; --muted:#37444E;
+    --rule:#7C8A95; --accent:#6E1A5E; --x:#E07ACF; --bot:#8FA3B3; --them:#E8EEF2;
   }
 }
 
@@ -158,17 +158,17 @@ button:disabled{opacity:.35;cursor:default}
 }
 .mk.bot{top:6px;height:11px;background:var(--bot);transform-origin:top}
 .mk.them{bottom:6px;height:11px;background:var(--them);transform-origin:bottom}
-.mk.x{background:var(--accent);width:4px;top:6px;height:26px;transform-origin:top}
+.mk.x{background:var(--x);width:4px;top:6px;height:26px;transform-origin:top}
 .drawn .mk{animation:rise .5s steps(6,end) forwards}
 @keyframes rise{to{transform:scaleY(1)}}
 .well .over{
   position:absolute;right:3px;top:50%;transform:translateY(-50%);
-  font:700 11px 'Chakra Petch',sans-serif;color:var(--muted);
+  font:700 11px 'Chakra Petch',sans-serif;color:var(--bot);
 }
 .well .quiet{
   position:absolute;inset:0;display:flex;align-items:center;justify-content:center;
   font:600 10px 'Chakra Petch',sans-serif;letter-spacing:.19em;
-  text-transform:uppercase;color:var(--muted);opacity:.6;
+  text-transform:uppercase;color:var(--bot);opacity:.85;
 }
 
 .out{text-align:right}
@@ -260,7 +260,7 @@ button:disabled{opacity:.35;cursor:default}
   <div class="key" aria-hidden="true">
     <span><i style="background:var(--bot)"></i>Agent has the floor</span>
     <span><i style="background:var(--them)"></i>Pharmacy has the floor</span>
-    <span><i style="background:var(--accent);height:22px"></i>Agent opened over them</span>
+    <span><i style="background:var(--x);height:22px"></i>Agent opened over them</span>
   </div>
 
   <section class="read" id="read">
