@@ -3,7 +3,7 @@
 **There is no sticker price on a prescription. Sticker calls the pharmacies and asks.**
 
 Built for the [CALL-E: Your Code Is Calling](https://call-e.devpost.com/) hackathon.
-Contributed upstream as
+Merged upstream as
 [CALLE-AI/awesome-phone-call-agents#404](https://github.com/CALLE-AI/awesome-phone-call-agents/pull/404).
 
 ## The problem
