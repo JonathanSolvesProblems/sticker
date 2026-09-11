@@ -87,7 +87,7 @@ This is the failure mode worth designing against. Branch on `quote_status`, neve
 
 ## Turning four answers into a finding
 
-| Pharmacy | Price for 30 | vs acquisition cost |
+| Pharmacy | Price for 30 | vs national average cost |
 | --- | --- | --- |
 | Lakeside Community Drug | $9.40 | 22x |
 | Cedar Street Pharmacy | $12.99 | 30x |

@@ -51,7 +51,7 @@ Sticker runs that survey with a phone agent instead of a research team.
 ```bash
 cd app
 pip install -e ".[dev]"
-python -m pytest tests -q      # 90 tests, no network, no credentials, no calls
+python -m pytest tests -q      # 94 tests, no network, no credentials, no calls
 sticker survey --offline       # the whole pipeline against a local stand-in
 ```
 

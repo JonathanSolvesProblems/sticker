@@ -176,7 +176,7 @@ def test_the_call_discloses_that_it_is_an_ai_before_anything_else() -> None:
     # The disclosure is inside the same spoken sentence as the question, and it comes
     # first within it, so the pharmacist knows what they are talking to before they are
     # asked for anything.
-    assert task.index("I'm an AI assistant") < task.index("What is your cash price")
+    assert task.index("I'm an AI assistant") < task.index("What's your cash price")
 
 
 def test_the_call_never_asks_for_personal_or_clinical_information() -> None:
@@ -202,7 +202,7 @@ def test_the_first_utterance_is_one_word_that_survives_a_collision() -> None:
     # across the person who answered, so the wait is written in terms of them finishing.
     assert "WAIT FOR THEM TO FINISH, NOT MERELY TO START" in task
     # The question must come after the wait, or the collision costs us the whole call.
-    assert task.index('"Hello?"') < task.index("What is your cash price")
+    assert task.index('"Hello?"') < task.index("What's your cash price")
 
 
 def test_the_call_repeats_itself_once_if_it_was_not_heard() -> None:

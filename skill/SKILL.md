@@ -97,7 +97,8 @@ Three rules keep a comparison honest. See `references/examples.md` for worked ca
 ## Judging a price
 
 A price alone cannot be judged, only compared. To say whether one is high, join it to the
-acquisition cost CMS publishes weekly, which is public and needs no key:
+National Average Drug Acquisition Cost CMS publishes weekly, which is public and needs no
+key:
 
 ```
 https://data.medicaid.gov/api/1/datastore/query/{nadac_dataset_id}?limit=5
@@ -106,5 +107,11 @@ https://data.medicaid.gov/api/1/datastore/query/{nadac_dataset_id}?limit=5
   &conditions[0][value]=METFORMIN HCL 500 MG
 ```
 
-Multiply `nadac_per_unit` by the quantity to get what the pharmacy paid. Report the retail
-price as a multiple of it, and cite the effective date, because the figure moves weekly.
+Multiplying `nadac_per_unit` by the quantity gives a national benchmark for that bottle,
+not what the pharmacy on the phone paid. NADAC is a survey average across pharmacy invoices
+nationwide, so a given shop paid more or less depending on its wholesaler and its volume.
+
+Report the retail price as a multiple of that benchmark, say in the same breath that the
+benchmark is a national average rather than this pharmacy's invoice, and cite the effective
+date, because the figure moves weekly. A multiple stated without that qualification reads
+as a claim about one business's margin, which is not something a phone call can establish.

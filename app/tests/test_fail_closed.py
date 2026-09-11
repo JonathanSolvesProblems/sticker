@@ -17,7 +17,13 @@ import httpx
 import pytest
 
 from sticker.call_design import RECIPIENT_SCHEMA, DrugRequest
-from sticker.calle import CalleAmbiguous, CalleError, CalleTransport, derive_run_id
+from sticker.calle import (
+    CalleAmbiguous,
+    CalleBusy,
+    CalleError,
+    CalleTransport,
+    derive_run_id,
+)
 from sticker.cli import _read_authorized, build_parser, cmd_survey
 from sticker.pharmacies import Pharmacy
 from sticker.safety import mask, mask_deep
@@ -81,6 +87,90 @@ async def test_a_client_error_on_create_is_a_refusal() -> None:
                 metadata={},
                 idem_key="k",
             )
+
+
+async def test_the_concurrency_limit_is_backpressure_not_a_refusal() -> None:
+    """HTTP 429 means the account's line was full and nothing was dialled.
+
+    That is the one definite negative in this transport, so it gets its own type: a
+    refusal would drop the pharmacy and an ambiguity would halt the run, and neither is
+    true of a call that provably did not happen.
+    """
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        return httpx.Response(429, json={"error": {"code": "account_concurrency_exceeded"}})
+
+    async with _transport(handler) as transport:
+        with pytest.raises(CalleBusy):
+            await transport.create(
+                phone=FICTIONAL,
+                task="ask the price",
+                recipient_schema=RECIPIENT_SCHEMA,
+                metadata={},
+                idem_key="k",
+            )
+
+
+async def test_a_busy_line_is_waited_out_and_the_pharmacy_still_gets_called(monkeypatch) -> None:
+    """Backing off keeps the pharmacy in the survey rather than dropping it."""
+    monkeypatch.setattr("sticker.survey.BUSY_BACKOFF_SECONDS", 0.0)
+    attempts = {"n": 0}
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        if request.method == "POST":
+            attempts["n"] += 1
+            if attempts["n"] < 3:
+                return httpx.Response(429, json={"error": {"code": "account_concurrency_exceeded"}})
+            return httpx.Response(200, json={"id": "call_1"})
+        return httpx.Response(
+            200,
+            json={
+                "id": "call_1",
+                "status": "completed",
+                "recipients": [{"structured_result": {"quote_status": "quoted",
+                                                      "cash_price_usd": "12.50",
+                                                      "quantity_quoted": "30",
+                                                      "answered_by": "human"}}],
+            },
+        )
+
+    async with _transport(handler) as transport:
+        survey = await run_survey(
+            drug=DrugRequest(name="metformin hcl", strength="500 mg", form="tablet", quantity=30),
+            postal_code="00000",
+            pharmacies=[_pharmacy(1)],
+            transport=transport,
+            caller_org="a test",
+            live=True,
+            concurrency=1,
+            fetch_nadac=False,
+        )
+
+    assert attempts["n"] == 3
+    assert len(survey.comparable) == 1
+    assert survey.comparable[0].price_usd == 12.50
+
+
+async def test_a_line_that_stays_full_is_not_counted_as_a_call_placed(monkeypatch) -> None:
+    monkeypatch.setattr("sticker.survey.BUSY_BACKOFF_SECONDS", 0.0)
+
+    def handler(request: httpx.Request) -> httpx.Response:
+        return httpx.Response(429, json={"error": {"code": "account_concurrency_exceeded"}})
+
+    async with _transport(handler) as transport:
+        survey = await run_survey(
+            drug=DrugRequest(name="metformin hcl", strength="500 mg", form="tablet", quantity=30),
+            postal_code="00000",
+            pharmacies=[_pharmacy(1)],
+            transport=transport,
+            caller_org="a test",
+            live=True,
+            concurrency=1,
+            fetch_nadac=False,
+        )
+
+    assert survey.calls_placed == 0
+    assert "concurrent-call limit" in survey.quotes[0].notes
 
 
 async def test_a_2xx_that_is_not_an_object_is_ambiguous() -> None:

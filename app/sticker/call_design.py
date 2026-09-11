@@ -156,9 +156,10 @@ def build_task(drug: DrugRequest, *, caller_org: str) -> str:
     platform's terms put that duty on the caller, so it is written into the first
     sentence and asserted in the test suite.
     """
-    question = (
-        f"What is your cash price, without insurance, for {drug.quantity} {drug.spoken()}?"
-    )
+    # Every second this takes to say is a second a busy counter can decide to hang up, so
+    # it is written to be short and to sound like a person: a contraction, the drug before
+    # the caveat, and the whole thing in one breath.
+    question = f"What's your cash price for {drug.quantity} {drug.spoken()}, no insurance?"
     return (
         f"You are calling the counter of a retail pharmacy on behalf of {caller_org}. You "
         "want one number and nothing else, and the person answering is busy.\n"
@@ -183,7 +184,7 @@ def build_task(drug: DrugRequest, *, caller_org: str) -> str:
         "\n"
         "ONLY once a live person has finished speaking and the line is quiet, say this as "
         "one short turn, then stop talking:\n"
-        f'  "Hi, I\'m an AI assistant calling for a price check. {question}"\n'
+        f'  "Hi, I\'m an AI assistant doing a price check. {question}"\n'
         "\n"
         "That single sentence both discloses what you are and asks the question, which is "
         "the whole call. Say you are an AI before you ask for anything, every time, "

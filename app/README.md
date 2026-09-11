@@ -179,9 +179,11 @@ find out" invites a fabricated answer.
 
 ## Side effects, cancellation, credentials
 
-- **Side effects.** In live mode, one outbound call per authorized number, roughly $0.05
-  each, under two minutes. Nothing is written to any third-party system. There are no
-  recurring jobs and no scheduler: one run is one set of calls.
+- **Side effects.** In live mode, one outbound call per authorized number. Nothing is
+  written to any third-party system. There are no recurring jobs and no scheduler: one run
+  is one set of calls. No per-call price or call duration is quoted here, because neither
+  is published anywhere this project can cite, and a figure invented for a README is worse
+  than no figure.
 - **Cancellation.** CALL-E exposes no cancel operation, so an in-flight call cannot be
   recalled. The controls are the ones before dialling: the allowlist, `--max-calls`, and
   the printed plan. Interrupting the process stops further calls but not the ones already
@@ -243,10 +245,12 @@ would be reasonable. They ask different questions.
   A survey therefore includes unreachable numbers, and they are reported as unreached
   rather than dropped.
 - Prices are collected in one moment. Nothing here should be read as a standing price.
-- `--concurrency` is a ceiling on our side, not a promise about the platform's. Calls
-  issued together do overlap, but the account's own limit is neither documented nor
-  exposed on the API, so the default stays low deliberately. Guessing high means a lot of
-  phones ringing at once in one neighbourhood.
+- **An account has a concurrent-call limit, and it is not documented or exposed.** Exceed
+  it and `POST /v1/calls` answers `HTTP 429 account_concurrency_exceeded`. That answer is
+  definite, so Sticker treats it as backpressure rather than a refusal: nothing was
+  dialled, the pharmacy stays in the survey, and the run waits and tries that number again
+  instead of dropping it. Because the cap cannot be read in advance, `--concurrency` is a
+  ceiling on our side and the default stays low.
 - **Turn-taking is not something the caller controls.** There is no parameter for it:
   `CreateCallRequest` has six fields and rejects unknown keys, so who speaks when is
   steered entirely from the task prose and not guaranteed by it. The call is written

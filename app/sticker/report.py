@@ -257,9 +257,10 @@ def render_text(survey: Survey) -> str:
     lines.append("")
     not_dialled = len([q for q in survey.quotes if not q.dialled])
     tail = f", {not_dialled} not dialled" if not_dialled else ""
-    lines.append(
-        f"{survey.calls_placed} calls placed{tail}, {survey.elapsed_human} of wall clock."
-    )
+    # A simulated run places no calls at all, so saying "calls placed" here would
+    # contradict the header two dozen lines above and overstate what happened.
+    noun = "calls placed" if survey.live else "simulated calls, none placed"
+    lines.append(f"{survey.calls_placed} {noun}{tail}, {survey.elapsed_human} of wall clock.")
     if survey.quote_rate is not None:
         lines.append(f"{survey.quote_rate}% of pharmacies called gave a price over the phone.")
     return "\n".join(lines)

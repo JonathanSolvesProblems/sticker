@@ -28,7 +28,7 @@ from .nadac import NadacError, lookup
 from .pharmacies import Pharmacy, find
 from .report import render_text
 from .safety import SafetyError, authorize_destinations, is_fictional, mask
-from .simulation import SIMULATED_BASE_URL, SimulatedCalle
+from .simulation import SIMULATED_BASE_URL, SIMULATED_POLL_SECONDS, SimulatedCalle
 from .survey import run_survey
 
 CONFIRM_TOKEN = "PLACE-REAL-CALLS"
@@ -119,6 +119,7 @@ def cmd_survey(args: argparse.Namespace) -> int:
             api_key="sticker-simulated-key",
             base_url=SIMULATED_BASE_URL,
             transport=sim.transport(),
+            poll_interval=SIMULATED_POLL_SECONDS,
         )
         survey = asyncio.run(
             run_survey(
@@ -169,7 +170,9 @@ def cmd_survey(args: argparse.Namespace) -> int:
         )
         return 2
 
-    print(f"About to place {len(pharmacies)} real calls, roughly ${len(pharmacies) * 0.05:.2f}.")
+    # No cost estimate. The per-call price is published nowhere this project can cite, and
+    # a number invented for a confirmation prompt is worse than no number.
+    print(f"About to place {len(pharmacies)} real calls.")
     for p in pharmacies:
         print(f"  {mask(p.e164)}  {p.name}")
 

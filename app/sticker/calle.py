@@ -37,6 +37,20 @@ class CalleError(RuntimeError):
     """A refused request. The provider said no, and that is a fact we can act on."""
 
 
+class CalleBusy(RuntimeError):
+    """The account's concurrent-call limit was hit, so this call was NOT placed.
+
+    Distinct from both a refusal and an ambiguity. CALL-E answers `HTTP 429
+    account_concurrency_exceeded` when more calls are in flight than the account's shared
+    line allows, and that answer is definite: nothing was dialled. It is therefore the one
+    error in this module that is safe to retry, and the survey backs off and tries again
+    rather than dropping the pharmacy.
+
+    The cap itself is not documented and not exposed on the API, so an app cannot size its
+    own waves in advance. Discovering it costs a rejected request rather than a call.
+    """
+
+
 class CalleAmbiguous(RuntimeError):
     """We do not know whether a call was placed.
 
@@ -122,7 +136,11 @@ class CalleTransport:
         base_url: str = DEFAULT_BASE_URL,
         timeout: float = 30.0,
         transport: httpx.AsyncBaseTransport | None = None,
+        poll_interval: float = POLL_INTERVAL_SECONDS,
     ) -> None:
+        # Kept on the transport so a simulated wire can poll fast while still walking the
+        # real polling loop, rather than the loop being short-circuited in tests.
+        self._poll_interval = poll_interval
         # Approve the origin BEFORE the key is put in a header, so a hostile override
         # never gets to see it. Redirects are off: urllib and httpx both re-send the
         # Authorization header across a cross-host 302.
@@ -186,6 +204,13 @@ class CalleTransport:
                 f"{mask(phone)}. The request was accepted by the server and failed inside "
                 "it, so the call may already be ringing. Reconcile before running again."
             )
+        # Backpressure, not refusal. The account's concurrent-call limit was reached and
+        # nothing was dialled, so the caller may wait and try this same number again.
+        if response.status_code == 429:
+            raise CalleBusy(
+                f"CALL-E is at the account's concurrent-call limit, so the call to "
+                f"{mask(phone)} was not placed: {mask_deep(_body_excerpt(response))}"
+            )
         if response.status_code >= 400:
             raise CalleError(
                 f"CALL-E refused the call to {mask(phone)}: HTTP {response.status_code} "
@@ -237,7 +262,7 @@ class CalleTransport:
         self,
         call_id: str,
         *,
-        interval: float = POLL_INTERVAL_SECONDS,
+        interval: float | None = None,
         timeout: float = POLL_TIMEOUT_SECONDS,
     ) -> CallOutcome:
         """Poll until the call reaches a terminal state.
@@ -245,6 +270,7 @@ class CalleTransport:
         Every failure in here is ambiguous rather than refused, because by this point the
         call has been created: losing sight of it does not mean it did not happen.
         """
+        interval = self._poll_interval if interval is None else interval
         waited = 0.0
         while True:
             try:

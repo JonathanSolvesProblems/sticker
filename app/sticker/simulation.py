@@ -21,6 +21,10 @@ from dataclasses import dataclass, field
 
 import httpx
 
+SIMULATED_POLL_SECONDS = 0.01
+"""No network sits behind the simulated wire, so nothing is gained by waiting between
+polls. The loop still runs twice; it just does not sleep through it."""
+
 SIMULATED_BASE_URL = "https://simulator.sticker.invalid"
 
 _CALL_PATH = re.compile(r"^/v1/calls/(?P<call_id>[^/]+)$")

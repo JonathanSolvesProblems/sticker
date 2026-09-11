@@ -15,6 +15,7 @@ import datetime as _dt
 from .call_design import RECIPIENT_SCHEMA, DrugRequest, build_task
 from .calle import (
     CalleAmbiguous,
+    CalleBusy,
     CalleError,
     CalleTransport,
     derive_run_id,
@@ -26,6 +27,11 @@ from .report import Quote, Survey
 from .safety import mask
 
 DEFAULT_CONCURRENCY = 3
+
+# How many times to wait out the account's concurrent-call limit before giving up on a
+# pharmacy. A 429 means nothing was dialled, so waiting costs time and never a call.
+BUSY_RETRIES = 4
+BUSY_BACKOFF_SECONDS = 8.0
 
 
 def _to_float(value: object) -> float | None:
@@ -114,13 +120,25 @@ async def _one_call(
             run_id=run_id, phone=pharmacy.e164, task=task, schema=RECIPIENT_SCHEMA
         )
         try:
-            call_id = await transport.create(
-                phone=pharmacy.e164,
-                task=task,
-                recipient_schema=RECIPIENT_SCHEMA,
-                metadata={"sticker_run_id": run_id, "sticker_npi": pharmacy.npi},
-                idem_key=key,
-            )
+            # The account's concurrency cap is not documented and not exposed, so the only
+            # way to find it is to reach it. A 429 means this call was definitely not
+            # placed, which makes it the one error here that is safe to wait out. Backing
+            # off keeps the pharmacy in the survey instead of dropping it for a reason
+            # that has nothing to do with the pharmacy.
+            for attempt in range(BUSY_RETRIES + 1):
+                try:
+                    call_id = await transport.create(
+                        phone=pharmacy.e164,
+                        task=task,
+                        recipient_schema=RECIPIENT_SCHEMA,
+                        metadata={"sticker_run_id": run_id, "sticker_npi": pharmacy.npi},
+                        idem_key=key,
+                    )
+                    break
+                except CalleBusy:
+                    if attempt == BUSY_RETRIES:
+                        raise
+                    await asyncio.sleep(BUSY_BACKOFF_SECONDS * (attempt + 1))
             outcome = await transport.wait(call_id)
         except CalleAmbiguous:
             halt.set()
@@ -181,6 +199,14 @@ async def run_survey(
             quotes.append(_unreached(pharmacy, f"Uncertain outcome: {result}"))
         elif isinstance(result, RunHalted):
             quotes.append(_unreached(pharmacy, str(result), dialled=False))
+        elif isinstance(result, CalleBusy):
+            quotes.append(
+                _unreached(
+                    pharmacy,
+                    "Not dialled. The account's concurrent-call limit stayed full.",
+                    dialled=False,
+                )
+            )
         elif isinstance(result, CalleError):
             quotes.append(_unreached(pharmacy, f"CALL-E refused this call: {result}"))
         elif isinstance(result, BaseException):

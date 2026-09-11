@@ -18,7 +18,12 @@ from sticker.cli import main
 from sticker.nadac import NadacRow
 from sticker.pharmacies import Pharmacy, _dedupe_key
 from sticker.report import Quote, Survey, render_text
-from sticker.simulation import SIMULATED_BASE_URL, ScriptedAnswer, SimulatedCalle
+from sticker.simulation import (
+    SIMULATED_BASE_URL,
+    SIMULATED_POLL_SECONDS,
+    ScriptedAnswer,
+    SimulatedCalle,
+)
 from sticker.survey import run_survey
 
 DRUG = DrugRequest(name="metformin hcl", strength="500 mg", form="tablet", quantity=30)
@@ -38,7 +43,10 @@ def _pharmacy(index: int) -> Pharmacy:
 
 def _transport(sim: SimulatedCalle) -> CalleTransport:
     return CalleTransport(
-        api_key="simulated", base_url=SIMULATED_BASE_URL, transport=sim.transport()
+        api_key="simulated",
+        base_url=SIMULATED_BASE_URL,
+        transport=sim.transport(),
+        poll_interval=SIMULATED_POLL_SECONDS,
     )
 
 
@@ -77,6 +85,7 @@ async def test_the_request_carries_the_schema_and_a_masked_free_number() -> None
         api_key="simulated",
         base_url=SIMULATED_BASE_URL,
         transport=httpx.MockTransport(record),
+        poll_interval=SIMULATED_POLL_SECONDS,
     )
     await run_survey(
         drug=DRUG,
@@ -324,7 +333,19 @@ def test_a_pharmacy_the_run_stopped_before_is_not_counted_as_a_call() -> None:
     )
     assert len(survey.quotes) == 2
     assert survey.calls_placed == 1
-    assert "1 calls placed, 1 not dialled" in render_text(survey)
+    assert "1 not dialled" in render_text(survey)
+
+
+def test_a_simulated_report_never_claims_calls_were_placed() -> None:
+    """The header says no calls were placed, so the footer must not contradict it."""
+    simulated = _survey_with([10.0, 20.0])
+    text = render_text(simulated)
+    assert "SIMULATED, no calls placed" in text
+    assert "calls placed" not in text.split("SIMULATED, no calls placed", 1)[1]
+    assert "2 simulated calls, none placed" in text
+
+    simulated.live = True
+    assert "2 calls placed" in render_text(simulated)
 
 
 def test_the_rendered_report_never_prints_a_full_number() -> None:
