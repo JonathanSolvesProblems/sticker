@@ -149,6 +149,10 @@ def build(paths: list[Path]) -> dict:
 
             turns, span = _turns(call.get("events") or [])
             note = str(structured.get("notes") or "")
+            if note.strip().lower() in {"unknown", "none", "n/a"}:
+                note = ""
+            if state == "no_price" and not note:
+                note = "The call ended after the question was asked."
             if state == "voicemail":
                 note = note or "Reached a voicemail box."
             if state == "unreached" and not note:

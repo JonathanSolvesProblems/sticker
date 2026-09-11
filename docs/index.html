@@ -4,6 +4,11 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Sticker</title>
+<meta name="description" content="Sticker phones licensed pharmacies for a prescription's cash price and prices it against the federal benchmark. Sixteen real calls, zero prices, and the measured reason why.">
+<meta property="og:title" content="Sticker: a pharmacy cash-price survey">
+<meta property="og:description" content="Sixteen real calls to pharmacies, zero prices, and the measured reason why: the agent talks over the pharmacist. Every call drawn as a two-channel trace.">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://jonathansolvesproblems.github.io/sticker/">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@500;600;700&family=Asap:wght@400;500;600;700&display=swap" rel="stylesheet">
@@ -95,6 +100,8 @@ body{
 .datum .val{font-size:34px;font-weight:700;letter-spacing:-.02em;line-height:1;margin-left:0}
 .datum .src{flex-basis:100%;font-size:12.5px;color:var(--muted);margin-top:4px}
 .datum .src a{color:var(--muted)}
+a{color:var(--ink);text-decoration-color:var(--accent);text-underline-offset:3px}
+.verdict a{color:var(--accent)}
 .datum[hidden]{display:none}
 
 .simbar{
@@ -271,6 +278,16 @@ button:disabled{opacity:.35;cursor:default}
       <div class="fig"><span>A year of refills</span><b id="h-year"></b></div>
     </div>
     <p class="verdict" id="verdict"></p>
+  </section>
+
+  <section class="read" id="read0">
+    <div class="figs">
+      <div class="fig"><span>Calls drawn</span><b id="z-calls"></b></div>
+      <div class="fig"><span>People who answered</span><b id="z-humans"></b></div>
+      <div class="fig"><span>Prices obtained</span><b id="z-priced"></b></div>
+      <div class="fig hot"><span>Agent spoke over them</span><b id="z-x"></b></div>
+    </div>
+    <p class="verdict" id="verdict0"></p>
   </section>
 
   <p class="foot" id="foot">
@@ -1887,7 +1904,7 @@ window.STICKER_RUN = {
    "price": null,
    "quantity": null,
    "markup": null,
-   "note": "unknown",
+   "note": "The call ended after the question was asked.",
    "transcript": [],
    "seconds": 18,
    "turns": [
@@ -2110,6 +2127,31 @@ function render(s){
       "</div>" +
       (r.note ? '<div class="ch" style="padding:0 0 9px;border:0"><div></div><div class="note">' + esc(r.note) + "</div></div>" : "");
   }).join("");
+
+  // The reading, for the run this actually was. When nobody said a price, the finding is
+  // the reason nobody did, and the page has to say it rather than leave a judge to infer
+  // it from magenta marks.
+  const rows = s.rows || [];
+  const finished = s.status === "complete" && rows.length > 0;
+  const priced = rows.filter(r => r.price !== null && r.price !== undefined).length;
+  if (finished && priced === 0 && s.live){
+    const humans = rows.filter(r => r.state === "no_price" || r.state === "refused").length;
+    const x = rows.reduce((n, r) => n + (r.collisions || 0), 0);
+    const longest = Math.max(0, ...rows.filter(r => r.state === "no_price").map(r => r.seconds || 0));
+    $("z-calls").textContent = rows.length;
+    $("z-humans").textContent = humans;
+    $("z-priced").textContent = "0";
+    $("z-x").textContent = x;
+    $("verdict0").innerHTML =
+      rows.length + " calls to licensed pharmacies in one ZIP. " + humans + " people picked up. " +
+      "None got as far as a price, and none refused one; the longest conversation with a person lasted " +
+      longest + " seconds. In <b>" + x + " places</b> the agent opened its turn while the pharmacist " +
+      "still had the floor, drawn above in magenta. There is no request parameter for turn-taking, " +
+      "so it is filed upstream as " +
+      '<a href="https://github.com/CALLE-AI/awesome-phone-call-agents/issues/415" target="_blank" rel="noopener">issue #415</a>, ' +
+      "where a maintainer is reproducing it from these call ids.";
+    $("read0").classList.add("on");
+  }
 
   const h = s.headline || {};
   if (h.cheapest !== undefined && h.spread){
