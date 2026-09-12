@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<link href="https://fonts.googleapis.com/css2?family=Chakra+Petch:wght@600;700&family=Asap:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+  /* The share card. Same tokens as the page, one real trace, the four figures. */
+  :root{--body:#232C34;--well:#131A20;--ink:#D5DEE4;--muted:#8494A0;--rule:#3B4750;--x:#E07ACF;--bot:#9FB4C4;--them:#E8EEF2}
+  html,body{margin:0;width:1200px;height:630px;background:var(--body);color:var(--ink);
+    font:400 22px/1.4 Asap,sans-serif;font-variant-numeric:tabular-nums;overflow:hidden}
+  .card{position:absolute;inset:0;padding:56px 64px;display:flex;flex-direction:column}
+  .marque{display:flex;align-items:center;gap:22px;font-family:'Chakra Petch',sans-serif}
+  .marque h1{margin:0;font-size:44px;font-weight:700;letter-spacing:.14em;text-transform:uppercase}
+  .marque span{font-size:18px;letter-spacing:.22em;color:var(--muted);text-transform:uppercase}
+  .line{margin:28px 0 0;font-size:30px;line-height:1.3;max-width:1000px}
+  .line b{color:var(--x);font-weight:700}
+  .well{position:relative;height:74px;margin:34px 0 0;background:var(--well);border:2px solid var(--rule);border-top-color:#0B1015}
+  .well .mid{position:absolute;left:0;right:0;top:50%;height:2px;background:var(--rule);opacity:.55}
+  .mk{position:absolute;width:6px;border-radius:3px}
+  .mk.bot{top:12px;height:22px;background:var(--bot)}
+  .mk.them{bottom:12px;height:22px;background:var(--them)}
+  .mk.x{top:10px;height:52px;width:8px;background:var(--x)}
+  .figs{display:grid;grid-template-columns:repeat(4,1fr);margin:30px 0 0;border:2px solid var(--rule)}
+  .fig{padding:20px 26px;border-right:2px solid var(--rule)}
+  .fig:last-child{border-right:0}
+  .fig span{display:block;font:600 14px/1 'Chakra Petch',sans-serif;letter-spacing:.17em;text-transform:uppercase;color:var(--muted)}
+  .fig b{display:block;margin-top:12px;font-size:46px;line-height:1;font-weight:700}
+  .fig.hot b{color:var(--x)}
+  .url{margin-top:auto;font:600 16px 'Chakra Petch',sans-serif;letter-spacing:.12em;color:var(--muted)}
+</style>
+</head>
+<body>
+<div class="card">
+  <div class="marque">
+    <svg viewBox="0 0 32 32" width="52" height="52" aria-hidden="true">
+      <rect width="32" height="32" fill="var(--well)"/>
+      <rect x="5" y="8" width="2" height="6" fill="var(--bot)"/><rect x="11" y="8" width="2" height="6" fill="var(--bot)"/><rect x="24" y="8" width="2" height="6" fill="var(--bot)"/>
+      <rect x="8" y="18" width="2" height="6" fill="var(--them)"/><rect x="14" y="18" width="2" height="6" fill="var(--them)"/><rect x="27" y="18" width="2" height="6" fill="var(--them)"/>
+      <rect x="18" y="6" width="3" height="20" fill="var(--x)"/>
+    </svg>
+    <h1>Sticker</h1>
+    <span>Cash price survey</span>
+  </div>
+  <p class="line">Sixteen real calls to pharmacies for one drug's cash price. Zero prices. The measured reason: <b>the agent talks over the pharmacist.</b></p>
+  <div class="well" id="well"><div class="mid"></div></div>
+  <div class="figs">
+    <div class="fig"><span>Calls</span><b>16</b></div>
+    <div class="fig"><span>People answered</span><b>7</b></div>
+    <div class="fig"><span>Prices</span><b>0</b></div>
+    <div class="fig hot"><span>Agent spoke over them</span><b>24</b></div>
+  </div>
+  <div class="url">jonathansolvesproblems.github.io/sticker</div>
+</div>
+<script>
+  // One real trace, Chain 2, the call with the most collisions, over its 60-second window.
+  // Baked in from study data so this image tells the same truth as the page.
+  const marks = window.OG_TURNS || [];
+  const well = document.getElementById("well");
+  for (const t of marks){
+    if (t.t > 60) continue;
+    const i = document.createElement("i");
+    i.className = "mk " + (t.x ? "x" : (t.ch === "bot" ? "bot" : "them"));
+    i.style.left = (t.t / 60 * 100).toFixed(2) + "%";
+    well.appendChild(i);
+  }
+</script>
+</body>
+</html>
