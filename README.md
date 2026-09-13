@@ -169,7 +169,7 @@ it can be checked.
 - **Twenty real calls, zero prices, nobody refused, 27 collisions across 19 traced calls,
   every conversation with a person over within about 40 seconds (11 to 41).** The
   results page draws the nineteen traced calls from the platform's event stream, with
-  the counts on it; the sixteenth is the command-line probe described above.
+  the counts on it; the twentieth is the command-line probe described above.
   https://jonathansolvesproblems.github.io/sticker/ and
   https://github.com/CALLE-AI/awesome-phone-call-agents/issues/415
 - **94 tests** in the video and the merged pull request; **104** now, after the `trace` command landed with ten of its own. `python -m pytest tests -q` in [`app/`](app/).
