@@ -7,7 +7,7 @@ Merged upstream as
 [CALLE-AI/awesome-phone-call-agents#404](https://github.com/CALLE-AI/awesome-phone-call-agents/pull/404).
 
 - **Demo video** (2:37): https://www.youtube.com/watch?v=0bfuCGyVWzo
-- **Write-up**, the sixteen calls and what the event stream showed:
+- **Write-up**, the first sixteen calls and what the event stream showed:
   https://jonathanandrei.com/blog/sticker-pharmacy-cash-price-phone-agent/
 - **Results page**, every call drawn: https://jonathansolvesproblems.github.io/sticker/
 
@@ -78,7 +78,7 @@ sticker trace --events examples/events.sample.json      # who had the floor on a
 
 `trace` is the barge-in meter: it reads a call's event stream and draws who had the floor
 second by second, marking every place the agent opened its turn within 1.5 seconds of the
-callee speaking. Run on the survey's own calls it counted the 24 collisions on the results
+callee speaking. Run on the survey's own calls it counted the 27 collisions on the results
 page. Point it at any call on your own account with `--call-id`, or replay a saved stream
 with no key. It never dials.
 
@@ -100,8 +100,8 @@ with no key. It never dials.
 
 ## What happened on real calls
 
-Sixteen calls were placed to licensed community pharmacies in one Manhattan ZIP code
-across 2026-09-09 and 2026-09-10, at hours from early morning to late afternoon. Fifteen
+Twenty calls were placed to licensed community pharmacies in one Manhattan ZIP code
+between 2026-09-09 and 2026-09-13, at hours from early morning to late afternoon. Nineteen
 are drawn on the [results page](https://jonathansolvesproblems.github.io/sticker/); the
 first, a probe placed from the command line before the study instrument existed, reached a
 closed pharmacy's voicemail. **Not one produced a usable cash price.** That is a finding
@@ -109,7 +109,7 @@ about the method, and it is reported here rather than buried:
 
 - **Turn-taking is not something the caller controls.** The agent opens its turn while the
   person answering is still speaking. Counted from the platform's own event stream, that
-  happened **24 times across the 15 traced calls**, and every one is drawn on the results
+  happened **27 times across the 19 traced calls**, and every one is drawn on the results
   page. The counter ships as `sticker trace`, so anyone can run it on their own calls.
   `CreateCallRequest` has six fields and rejects unknown keys, so there is no parameter for
   it, and no wording in the task prevented it. Filed upstream as
@@ -123,7 +123,7 @@ about the method, and it is reported here rather than buried:
   was asked.
 
 Whether pharmacies decline to price for a disclosed AI caller, or simply never heard the
-question cleanly, is not something fifteen calls can separate. Testing it by removing the
+question cleanly, is not something nineteen calls can separate. Testing it by removing the
 disclosure would answer it and is not a thing this project will do.
 
 ## Known limitations
@@ -166,9 +166,9 @@ it can be checked.
   `result_schema`, `recipient_result_schema`, `metadata`, `webhook_url`, and
   `GET /v1/calls/{id}/events` for the event stream.
   https://docs.heycall-e.com/api-reference/calls
-- **Sixteen real calls, zero prices, nobody refused, 24 collisions across 15 traced calls,
+- **Twenty real calls, zero prices, nobody refused, 27 collisions across 19 traced calls,
   every conversation with a person over within about 40 seconds (11 to 41).** The
-  results page draws the fifteen traced calls from the platform's event stream, with
+  results page draws the nineteen traced calls from the platform's event stream, with
   the counts on it; the sixteenth is the command-line probe described above.
   https://jonathansolvesproblems.github.io/sticker/ and
   https://github.com/CALLE-AI/awesome-phone-call-agents/issues/415
