@@ -6,6 +6,11 @@ Built for the [CALL-E: Your Code Is Calling](https://call-e.devpost.com/) hackat
 Merged upstream as
 [CALLE-AI/awesome-phone-call-agents#404](https://github.com/CALLE-AI/awesome-phone-call-agents/pull/404).
 
+- **Demo video** (2:37): https://www.youtube.com/watch?v=0bfuCGyVWzo
+- **Write-up**, the sixteen calls and what the event stream showed:
+  https://jonathanandrei.com/blog/sticker-pharmacy-cash-price-phone-agent/
+- **Results page**, every call drawn: https://jonathansolvesproblems.github.io/sticker/
+
 ## The problem
 
 Pharmacies nationally paid about **43 cents** for thirty metformin tablets. That is not a
