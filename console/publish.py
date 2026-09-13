@@ -47,6 +47,29 @@ def _kind(name: str) -> str:
     return "Chain" if any(c in lowered for c in CHAINS) else "Independent"
 
 
+def _nadac_url(effective_date: str) -> str:
+    """The CMS dataset page for the year the figure is effective in.
+
+    CMS publishes one NADAC dataset per calendar year, so a link to any other year's file
+    would send a reader to a page that does not contain the figure. Runs recorded before
+    the app started remembering its dataset id only carry an effective date, so the id is
+    resolved here from the same CMS metastore the app itself reads.
+    """
+    import sys
+
+    sys.path.insert(0, str(HERE.parent / "app"))
+    from sticker.nadac import _dataset_ids  # noqa: E402
+
+    try:
+        dataset_id, _ = _dataset_ids(int(effective_date[:4]))
+    except Exception:
+        return (
+            "https://data.medicaid.gov/datasets"
+            "?keywords[0]=National%20Average%20Drug%20Acquisition%20Cost%20(NADAC)"
+        )
+    return f"https://data.medicaid.gov/dataset/{dataset_id}"
+
+
 def _turns(events: list[dict], window: float = 1.5) -> tuple[list[dict], float]:
     """Who held the floor, second by second, from the moment the line opened.
 
@@ -117,7 +140,7 @@ def build(paths: list[Path]) -> dict:
                 f"CMS NADAC, {nadac.get('description')} (NDC {nadac.get('ndc')}): "
                 f"${nadac.get('per_unit')} per each, effective {nadac.get('effective_date')}."
             )
-            url = "https://data.medicaid.gov/dataset/dfa2ab14-06c2-457a-9e36-5cb6d80f8d93"
+            url = nadac.get("source_url") or _nadac_url(nadac.get("effective_date", ""))
         first = _dt.datetime.fromisoformat(run["started_at"])
         last = _dt.datetime.fromisoformat(run["finished_at"])
         started = first if started is None else min(started, first)

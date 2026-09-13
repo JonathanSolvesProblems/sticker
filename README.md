@@ -14,7 +14,7 @@ week, surveyed from pharmacy invoices, and anyone can read it:
 
 ```
 CMS NADAC, METFORMIN HCL 500 MG TABLET: $0.01419 per each, effective 2026-08-19.
-https://data.medicaid.gov/dataset/dfa2ab14-06c2-457a-9e36-5cb6d80f8d93
+https://data.medicaid.gov/dataset/fbb83258-11c7-47f5-8b18-5f8e79f7e704
 ```
 
 What *you* pay is a different number. It differs at every counter, it changes, and it is
@@ -96,9 +96,10 @@ closed pharmacy's voicemail. **Not one produced a usable cash price.** That is a
 about the method, and it is reported here rather than buried:
 
 - **Turn-taking is not something the caller controls.** The agent opens its turn while the
-  person answering is still speaking. `CreateCallRequest` has six fields and rejects
-  unknown keys, so there is no parameter for it, and no wording in the task prevented it.
-  Filed upstream as
+  person answering is still speaking. Counted from the platform's own event stream, that
+  happened **24 times across the 15 traced calls**, and every one is drawn on the results
+  page. `CreateCallRequest` has six fields and rejects unknown keys, so there is no
+  parameter for it, and no wording in the task prevented it. Filed upstream as
   [issue #415](https://github.com/CALLE-AI/awesome-phone-call-agents/issues/415), where a
   maintainer is now investigating. The mitigation in this repository is to open with a
   single word, so a collision costs one word instead of the whole question.
@@ -121,6 +122,46 @@ disclosure would answer it and is not a thing this project will do.
 - The NPI registry includes pharmacies that have closed or moved, so a survey contains
   unreachable numbers. They are reported as unreached rather than dropped.
 - Prices would be a snapshot from one morning, not a standing price.
+
+## Sources
+
+Every figure stated in this README, on the results page and in the demo video, with where
+it can be checked.
+
+- **$0.01419 per tablet, so about 43 cents for thirty metformin.** CMS, NADAC (National
+  Average Drug Acquisition Cost) 2026, row for METFORMIN HCL 500 MG TABLET effective
+  2026-08-19. https://data.medicaid.gov/dataset/fbb83258-11c7-47f5-8b18-5f8e79f7e704
+- **Published every week, surveyed from pharmacy invoices.** CMS, Retail Price Survey:
+  NADAC averages "survey invoice prices from retail community pharmacies across the United
+  States" and "the NADAC file is updated on a weekly basis."
+  https://www.medicaid.gov/medicaid/prescription-drugs/retail-price-survey
+- **265 pharmacies phoned over one month, one generic from $29.99 to $1,345.00 in one
+  metro area.** Kriz, Nelson, Venkitachalam et al., "Variability in Price of Generic
+  Antipsychotic Medications at Community Pharmacies," *Psychiatric Services*, 2020.
+  Kansas City metropolitan area, 25 April to 25 May 2017, aripiprazole 30-day supply.
+  https://doi.org/10.1176/appi.ps.201900319 (abstract also at
+  https://pubmed.ncbi.nlm.nih.gov/32576120/)
+- **528 pharmacies, a $52 average difference inside one ZIP code.** Arora, Sood et al.,
+  "The price may not be right: the value of comparison shopping for prescription drugs,"
+  *American Journal of Managed Care*, 2017. Los Angeles County, July to August 2014; the
+  $52 is the average within-ZIP difference for levofloxacin.
+  https://pubmed.ncbi.nlm.nih.gov/28817779/
+- **The federal pharmacy registry.** CMS, NPPES NPI Registry, queried for the
+  Community/Retail Pharmacy taxonomy (3336C0003X). https://npiregistry.cms.hhs.gov/api-page
+- **CALL-E's REST API, its structured result schema, and the six fields of a call
+  request.** CALL-E API reference, `POST /v1/calls`: `task`, `recipients`,
+  `result_schema`, `recipient_result_schema`, `metadata`, `webhook_url`, and
+  `GET /v1/calls/{id}/events` for the event stream.
+  https://docs.heycall-e.com/api-reference/calls
+- **Sixteen real calls, zero prices, nobody refused, 24 collisions across 15 traced calls,
+  every conversation with a person over within about 40 seconds (11 to 41).** The
+  results page draws the fifteen traced calls from the platform's event stream, with
+  the counts on it; the sixteenth is the command-line probe described above.
+  https://jonathansolvesproblems.github.io/sticker/ and
+  https://github.com/CALLE-AI/awesome-phone-call-agents/issues/415
+- **94 tests.** `python -m pytest tests -q` in [`app/`](app/) collects 94.
+- **Merged upstream.** Pull request #404, merged 2026-09-11 after five maintainer review
+  passes. https://github.com/CALLE-AI/awesome-phone-call-agents/pull/404
 
 ## Licence
 

@@ -235,6 +235,8 @@ async def main() -> int:
                     "per_unit": nadac.per_unit_usd,
                     "effective_date": nadac.effective_date,
                     "cost_for_quantity": nadac.cost_for(drug.quantity),
+                    "dataset_id": nadac.dataset_id,
+                    "source_url": nadac.source_url,
                 },
                 "started_at": started.isoformat(),
                 "finished_at": finished.isoformat(),
