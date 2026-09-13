@@ -45,7 +45,7 @@ Sticker runs that survey with a phone agent instead of a research team.
 
 ## Testing it
 
-Sixteen steps, none of which place a call, in [TESTING.md](TESTING.md).
+Seventeen steps, none of which place a call, in [TESTING.md](TESTING.md).
 
 ## What is here
 
@@ -60,7 +60,7 @@ Sixteen steps, none of which place a call, in [TESTING.md](TESTING.md).
 ```bash
 cd app
 pip install -e ".[dev]"
-python -m pytest tests -q      # 94 tests, no network, no credentials, no calls
+python -m pytest tests -q      # 104 tests, no network, no credentials, no calls
 sticker survey --offline       # the whole pipeline against a local stand-in
 ```
 
@@ -68,12 +68,19 @@ Nothing dials. The simulated CALL-E is an `httpx.MockTransport` mounted undernea
 transport, so the request building, idempotency header, polling loop and error mapping
 under test are the same ones a live run uses.
 
-Two more read-only commands:
+Three more read-only commands:
 
 ```bash
 sticker find --zip 10025                                # licensed pharmacies near a ZIP
 sticker cost --drug "atorvastatin" --strength "20 mg"   # the national average cost
+sticker trace --events examples/events.sample.json      # who had the floor on a call
 ```
+
+`trace` is the barge-in meter: it reads a call's event stream and draws who had the floor
+second by second, marking every place the agent opened its turn within 1.5 seconds of the
+callee speaking. Run on the survey's own calls it counted the 24 collisions on the results
+page. Point it at any call on your own account with `--call-id`, or replay a saved stream
+with no key. It never dials.
 
 ## Safety, because the side effect is a telephone ringing
 
@@ -103,8 +110,9 @@ about the method, and it is reported here rather than buried:
 - **Turn-taking is not something the caller controls.** The agent opens its turn while the
   person answering is still speaking. Counted from the platform's own event stream, that
   happened **24 times across the 15 traced calls**, and every one is drawn on the results
-  page. `CreateCallRequest` has six fields and rejects unknown keys, so there is no
-  parameter for it, and no wording in the task prevented it. Filed upstream as
+  page. The counter ships as `sticker trace`, so anyone can run it on their own calls.
+  `CreateCallRequest` has six fields and rejects unknown keys, so there is no parameter for
+  it, and no wording in the task prevented it. Filed upstream as
   [issue #415](https://github.com/CALLE-AI/awesome-phone-call-agents/issues/415), where a
   maintainer is now investigating. The mitigation in this repository is to open with a
   single word, so a collision costs one word instead of the whole question.
@@ -164,7 +172,7 @@ it can be checked.
   the counts on it; the sixteenth is the command-line probe described above.
   https://jonathansolvesproblems.github.io/sticker/ and
   https://github.com/CALLE-AI/awesome-phone-call-agents/issues/415
-- **94 tests.** `python -m pytest tests -q` in [`app/`](app/) collects 94.
+- **94 tests** in the video and the merged pull request; **104** now, after the `trace` command landed with ten of its own. `python -m pytest tests -q` in [`app/`](app/).
 - **Merged upstream.** Pull request #404, merged 2026-09-11 after five maintainer review
   passes. https://github.com/CALLE-AI/awesome-phone-call-agents/pull/404
 

@@ -1,6 +1,6 @@
 # Testing Sticker
 
-Sixteen steps, in order. Steps 1 through 14 need no API key and place no calls. Steps 15
+Seventeen steps, in order. Steps 1 through 14 need no API key and place no calls. Steps 15
 and 16 need nothing installed at all. Every expected result below was observed on a fresh
 clone on 2026-09-11.
 
@@ -22,7 +22,7 @@ Expected: installs with no errors. The `[dev]` extra brings pytest.
 python -m pytest tests -q
 ```
 
-Expected: `94 passed` in under two seconds. No network, no credentials, no calls. This
+Expected: `104 passed` in under two seconds. No network, no credentials, no calls. This
 proves the request building, idempotency header, polling loop, error mapping, masking,
 allowlist reader, halt logic and call ceiling all behave, against a simulated wire mounted
 under the real transport.
@@ -33,8 +33,8 @@ under the real transport.
 sticker --help
 ```
 
-Expected: four commands. `find` and `cost` are read-only, `survey` is simulated by
-default, `doctor` checks a key without spending a call.
+Expected: five commands. `find`, `cost` and `trace` are read-only, `survey` is simulated
+by default, `doctor` checks a key without spending a call.
 
 ## The survey, without calling anyone
 
@@ -71,6 +71,18 @@ national average, not any one pharmacy's invoice," and a link to the dataset.
 Spell the drug the way CMS does. `atorvastatin calcium` returns a clear message saying
 no row matched and to check the spelling against CMS's own wording, because NADAC lists
 it without the salt. `metformin hcl` works because NADAC keeps that one.
+
+**6b. Draw a call's trace without a key.**
+
+```bash
+sticker trace --events examples/events.sample.json
+```
+
+Expected: two text channels, `agent` above `callee`, with `X` where the agent opened its
+turn within 1.5 seconds of the callee speaking, then `2 collisions over 12s` and `first
+collision at 2.7s after connect`. This is the measurement behind the results page and
+issue #415, run on an invented stream. With `CALLE_API_KEY` set, `--call-id` runs it on
+any call on your own account. It never dials.
 
 ## Discovery, which never dials
 
