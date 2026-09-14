@@ -4,7 +4,9 @@
 
 Built for the [CALL-E: Your Code Is Calling](https://call-e.devpost.com/) hackathon.
 Merged upstream as
-[CALLE-AI/awesome-phone-call-agents#404](https://github.com/CALLE-AI/awesome-phone-call-agents/pull/404).
+[CALLE-AI/awesome-phone-call-agents#404](https://github.com/CALLE-AI/awesome-phone-call-agents/pull/404),
+with the barge-in meter and the citation fix following as
+[#553](https://github.com/CALLE-AI/awesome-phone-call-agents/pull/553).
 
 - **Demo video** (2:37): https://www.youtube.com/watch?v=0bfuCGyVWzo
 - **Write-up**, the first sixteen calls and what the event stream showed:
@@ -174,7 +176,9 @@ it can be checked.
   https://github.com/CALLE-AI/awesome-phone-call-agents/issues/415
 - **94 tests** in the video and the merged pull request; **104** now, after the `trace` command landed with ten of its own. `python -m pytest tests -q` in [`app/`](app/).
 - **Merged upstream.** Pull request #404, merged 2026-09-11 after five maintainer review
-  passes. https://github.com/CALLE-AI/awesome-phone-call-agents/pull/404
+  passes, and #553 (the `trace` command and the citation fix), merged 2026-09-14.
+  https://github.com/CALLE-AI/awesome-phone-call-agents/pull/404 and
+  https://github.com/CALLE-AI/awesome-phone-call-agents/pull/553
 
 ## Licence
 
